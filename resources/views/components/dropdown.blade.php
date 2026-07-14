@@ -1,0 +1,1 @@
+<div x-data="{open:false}" class="relative"><button type="button" @click="open=!open" class="rounded-lg border px-3 py-2">{{ $trigger ?? 'Menu' }}</button><div x-show="open" x-cloak @click.outside="open=false" class="absolute right-0 z-20 mt-2 w-48 rounded-lg border bg-white p-2 shadow-lg">{{ $slot }}</div></div>

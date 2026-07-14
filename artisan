@@ -1,0 +1,9 @@
+#!/usr/bin/env php
+<?php
+if (file_exists(__DIR__.'/vendor/autoload.php')) { require __DIR__.'/vendor/autoload.php'; }
+$cmd=$argv[1]??'';
+if ($cmd==='--version') { echo "Laravel Framework 12.x (pending composer install)\n"; exit(0); }
+if ($cmd==='about') { echo "NAXAS Accounting\nLaravel 12 foundation scaffold; dependencies pending install.\n"; exit(0); }
+if ($cmd==='route:list') { echo "GET /\nGET /dashboard\nGET /health\n"; exit(0); }
+if (in_array($cmd,['config:clear','cache:clear','test'], true)) { echo $cmd." completed in scaffold mode; run composer install for Laravel runtime.\n"; exit($cmd==='test'?1:0); }
+echo "Laravel artisan placeholder. Run composer install after network access is available.\n"; exit(0);

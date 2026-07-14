@@ -1,0 +1,1 @@
+@props(['title','subtitle'=>null])<header class="mb-6"><h1 class="text-2xl font-semibold tracking-tight text-slate-950">{{ $title }}</h1>@if($subtitle)<p class="mt-1 text-sm text-slate-600">{{ $subtitle }}</p>@endif</header>
