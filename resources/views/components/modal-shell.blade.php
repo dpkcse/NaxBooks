@@ -1,1 +1,0 @@
-<div x-data="{show:false}" x-show="show" x-cloak class="fixed inset-0 z-50 grid place-items-center bg-slate-900/50 p-4"><section {{ $attributes->merge(['class'=>'w-full max-w-lg rounded-xl bg-white p-6 shadow-xl']) }}>{{ $slot }}</section></div>
