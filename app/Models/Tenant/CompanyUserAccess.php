@@ -1,0 +1,1 @@
+<?php namespace App\Models\Tenant; class CompanyUserAccess extends TenantModel { protected $table='company_user_access'; protected $guarded=[]; protected function casts():array{return ['status'=>'string'];} }

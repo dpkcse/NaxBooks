@@ -31,6 +31,17 @@ return [
 
     'connections' => [
 
+        // Dedicated provisioning credentials; runtime tenant credentials never create databases.
+        'provisioning' => [
+            'driver' => env('PROVISIONING_DB_CONNECTION', 'mysql'),
+            'host' => env('PROVISIONING_DB_HOST', env('CENTRAL_DB_HOST', env('DB_HOST', '127.0.0.1'))),
+            'port' => env('PROVISIONING_DB_PORT', env('CENTRAL_DB_PORT', env('DB_PORT', '3306'))),
+            'database' => env('PROVISIONING_DB_DATABASE', 'information_schema'),
+            'username' => env('PROVISIONING_DB_USERNAME'), 'password' => env('PROVISIONING_DB_PASSWORD'),
+            'unix_socket' => env('PROVISIONING_DB_SOCKET', ''), 'charset' => 'utf8mb4', 'collation' => 'utf8mb4_unicode_ci',
+            'prefix' => '', 'prefix_indexes' => true, 'strict' => true, 'engine' => null,
+        ],
+
         'central' => [
             'driver' => env('CENTRAL_DB_CONNECTION', env('DB_CONNECTION', 'sqlite')),
             'url' => env('CENTRAL_DATABASE_URL'),

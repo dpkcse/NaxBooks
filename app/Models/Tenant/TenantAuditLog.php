@@ -1,0 +1,1 @@
+<?php namespace App\Models\Tenant; class TenantAuditLog extends TenantModel { public $timestamps=false; protected $guarded=[]; protected function casts():array{return ['old_values'=>'array','new_values'=>'array'];} }
