@@ -1,0 +1,1 @@
+@extends('layouts.app')@section('content')<h1>Confirm password</h1><form method="POST" action="{{ route('password.confirm') }}">@csrf<input name="password" type="password" required><button>Confirm</button></form>@endsection

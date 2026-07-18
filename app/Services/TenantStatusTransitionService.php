@@ -1,0 +1,4 @@
+<?php
+namespace App\Services;
+use App\Enums\TenantStatus;use App\Models\Central\Tenant;use DomainException;
+class TenantStatusTransitionService{private const ALLOWED=[TenantStatus::PendingProvisioning->value=>[TenantStatus::Provisioning],TenantStatus::Provisioning->value=>[TenantStatus::Active,TenantStatus::Suspended],TenantStatus::Active->value=>[TenantStatus::Suspended,TenantStatus::Archived],TenantStatus::Suspended->value=>[TenantStatus::Active,TenantStatus::Archived],TenantStatus::Archived->value=>[],];public function transition(Tenant $tenant,TenantStatus $to):Tenant{if(! $this->canTransition($tenant->status,$to)){throw new DomainException("Tenant status transition from {$tenant->status->value} to {$to->value} is not allowed.");}$tenant->forceFill(['status'=>$to])->save();return $tenant;}public function canTransition(TenantStatus $from,TenantStatus $to):bool{return in_array($to,self::ALLOWED[$from->value]??[],true);}}
