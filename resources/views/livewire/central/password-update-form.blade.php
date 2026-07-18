@@ -1,0 +1,1 @@
+<form wire:submit="save"><h2>Update password</h2><input wire:model="current_password" type="password" placeholder="Current password"><input wire:model="password" type="password" placeholder="New password"><input wire:model="password_confirmation" type="password" placeholder="Confirm password"><button>Update password</button></form>

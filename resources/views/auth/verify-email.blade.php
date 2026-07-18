@@ -1,0 +1,1 @@
+@extends('layouts.app')@section('content')<h1>Verify email</h1><p>Please verify your email address before continuing.</p><form method="POST" action="{{ route('verification.send') }}">@csrf<button>Resend verification email</button></form>@endsection

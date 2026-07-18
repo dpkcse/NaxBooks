@@ -1,0 +1,1 @@
+@extends('layouts.app')@section('content')<h1>Central dashboard</h1><p>Authentication establishes central identity only. Choose an active membership before tenant access.</p><livewire:central.tenant-selector />@endsection

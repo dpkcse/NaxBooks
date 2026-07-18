@@ -1,0 +1,1 @@
+@extends('layouts.app')@section('content')<h1>Forgot password</h1><form method="POST" action="{{ route('password.email') }}">@csrf<input name="email" type="email" required placeholder="Email"><button>Email reset link</button></form>@endsection
