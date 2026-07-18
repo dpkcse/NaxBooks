@@ -14,3 +14,6 @@ Run Composer dependency installation/resolution, non-destructive migration previ
 
 ## Phase 1.3 tenancy foundation
 Phase 1.3 introduces exact verified-domain resolution, a runtime tenant connection context, and isolated cache/job/file helpers. It deliberately does **not** provision tenant databases or create business modules. See [local tenancy setup](docs/setup/local-tenancy-development.md) and the [Phase 1.3 completion report](docs/audits/phase-1-3-completion-report.md).
+
+## Tenant provisioning (Phase 1.4)
+Tenant provisioning is explicitly scoped and never performs database deletion. See [local tenant provisioning](docs/setup/local-tenant-provisioning.md) for required separate credentials and validation commands. The current source is conditional on local MySQL/MariaDB runtime verification.

@@ -1,0 +1,1 @@
+<?php namespace App\Models\Tenant; class Currency extends TenantModel { protected $guarded=[]; protected function casts():array{return ['is_base'=>'boolean','is_active'=>'boolean','decimal_places'=>'integer'];} }
