@@ -1,0 +1,2 @@
+# Phase 1.3 test matrix
+Local MySQL/MariaDB integration validation must cover exact/unknown/malformed hosts, verified and disabled domains, all tenant lifecycle statuses, active/invited/suspended/revoked/non-member access, connection switching/purge, tenant-model guard, Livewire update host re-resolution, cache collisions, job success/failure cleanup, traversal, and platform route non-initialization. SQLite alone cannot prove connection isolation.

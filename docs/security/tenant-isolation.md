@@ -1,0 +1,2 @@
+# Phase 1.3 tenant isolation controls
+Tenant identity is derived from a normalized exact host lookup, then lifecycle and central active membership are checked before database initialization. Platform routes are host-constrained and do not contain tenant middleware. Context uses no static tenant ID, connection settings are purged on every cleanup, and cache/file helpers require initialized trusted context. Hidden inputs and Livewire properties are not tenant identity sources; Livewire endpoints must be assigned the same tenant middleware when enabled for tenant components.

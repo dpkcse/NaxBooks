@@ -1,0 +1,1 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><title>Tenant dashboard</title></head><body><main><h1>{{ $tenant->name }}</h1><dl><dt>Status</dt><dd>{{ $tenant->status->value }}</dd><dt>User</dt><dd>{{ $user->email }}</dd><dt>Role</dt><dd>{{ $membership->role_key }}</dd><dt>Domain</dt><dd>{{ $domain }}</dd></dl></main></body></html>

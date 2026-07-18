@@ -3,6 +3,8 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use App\Tenancy\TenantContext;
+use App\Tenancy\TenantContextManager;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -11,7 +13,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        $this->app->scoped(TenantContext::class);
+        $this->app->scoped(TenantContextManager::class);
     }
 
     /**
