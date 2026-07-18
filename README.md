@@ -11,3 +11,6 @@ For a disposable local Phase 1.2 database, `DB_*` and `CENTRAL_DB_*` may intenti
 ## Validation
 
 Run Composer dependency installation/resolution, non-destructive migration preview, Laravel tests, Pint, PHPStan, and the frontend build before deployment. MariaDB/MySQL migration validation must not be inferred from SQLite.
+
+## Phase 1.3 tenancy foundation
+Phase 1.3 introduces exact verified-domain resolution, a runtime tenant connection context, and isolated cache/job/file helpers. It deliberately does **not** provision tenant databases or create business modules. See [local tenancy setup](docs/setup/local-tenancy-development.md) and the [Phase 1.3 completion report](docs/audits/phase-1-3-completion-report.md).
