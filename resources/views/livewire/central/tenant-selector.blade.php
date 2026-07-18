@@ -1,1 +1,1 @@
-<section><h2>Active memberships</h2>@forelse($memberships as $membership)<article>{{ $membership->tenant->name }} — {{ $membership->role }}</article>@empty<p>No active memberships are available.</p>@endforelse</section>
+<section><h2>Active memberships</h2>@forelse($memberships as $membership)<article>{{ $membership->tenant->name }} — {{ $membership->role_key }}</article>@empty<p>No active memberships are available.</p>@endforelse</section>

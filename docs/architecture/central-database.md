@@ -1,13 +1,17 @@
 # Central Database Ownership
 
-The central database owns identity, tenancy, membership, domains, provisioning, platform audit, and future commercial records. Central tables never store tenant business transactions.
+The `central` connection owns platform identity and tenancy metadata only. It never contains tenant business transactions. Phase 1.2 does not register, select, or switch a tenant database connection.
 
-| Table | Purpose | Ownership | Main fields | Unique constraints | Indexes | Foreign keys | Lifecycle rules | Deletion policy |
-|---|---|---|---|---|---|---|---|---|
-| users | Central login identities. | Platform. | id, name, email, password, email_verified_at, disabled_at, last_login_at. | email. | disabled_at, email_verified_at. | none initially. | Created by registration/invitation/admin. | Soft-delete or disable; preserve audit links. |
-| tenants | Workspace records. | Platform. | id/uuid, name, slug, status, database_name, owner_user_id, provisioned_at. | slug, database_name. | status, owner_user_id. | owner_user_id -> users. | Status transitions only through lifecycle service. | Archive; no hard delete while audit/subscription exists. |
-| domains | Tenant and future custom domains. | Platform. | id, tenant_id, domain, normalized_domain, type, is_primary, verified_at, active. | normalized_domain. | tenant_id, active, type. | tenant_id -> tenants. | Unknown domains fail closed. | Delete only after tenant archive or replacement. |
-| tenant_memberships | User access to tenants. | Platform. | id, tenant_id, user_id, status, role_hint, joined_at. | tenant_id + user_id. | user_id, tenant_id, status. | tenant_id -> tenants; user_id -> users. | Active membership required for tenant routes. | Soft delete/revoke for audit. |
-| tenant_invitations | Pending membership invitations. | Platform. | id, tenant_id, email, token_hash, invited_by_user_id, expires_at, accepted_at. | tenant_id + email + active token. | token_hash, expires_at. | tenant_id -> tenants; invited_by_user_id -> users. | Tokens are hashed; expired invitations unusable. | Prune expired after retention. |
-| provisioning_attempts | Idempotent provisioning progress. | Platform. | id, tenant_id, idempotency_key, status, completed_steps, error_code. | idempotency_key. | tenant_id, status. | tenant_id -> tenants. | One active attempt per tenant via lock. | Retain for operations/audit. |
-| platform_audit_logs | Security and operational audit. | Platform. | id, actor_user_id, tenant_id nullable, event, ip_hash, metadata, created_at. | none. | actor_user_id, tenant_id, event, created_at. | actor_user_id -> users nullable; tenant_id -> tenants nullable. | Never store secrets. | Immutable append-only with retention policy. |
+| Table | Key fields and integrity |
+| --- | --- |
+| `users` | Central identity; unique email; `status` (`active`/`disabled`) and platform-admin flag. |
+| `tenants` | Unique slug/database name; restricted `owner_user_id`; lifecycle status, lifecycle datetimes, and JSON settings. |
+| `domains` | Restricted tenant FK, globally unique domain, type/status, primary/verified booleans and verification datetime. |
+| `tenant_memberships` | Restricted tenant/user FKs, `role_key`, status/datetimes, and unique tenant/user pair. |
+| `tenant_invitations` | Hashed token, intended role key, inviter, required expiry, acceptance/revocation datetimes; invitation tokens are never stored raw. |
+| `provisioning_attempts` | Diagnostics only: retry number, step data, sanitized error data, request/initiator and lifecycle datetimes; unique tenant/attempt number. It does **not** execute provisioning. |
+| `platform_audit_logs` | Immutable append-only audit entries with optional actor/tenant, entity identifiers, old/new JSON, reason, request metadata, and no secrets. |
+
+All platform migrations explicitly use `Schema::connection('central')`. In disposable local MariaDB development, default `DB_*` and `CENTRAL_DB_*` may intentionally name the same database. Production must configure `CENTRAL_DB_CONNECTION`, `CENTRAL_DB_HOST`, `CENTRAL_DB_PORT`, `CENTRAL_DB_DATABASE`, `CENTRAL_DB_USERNAME`, `CENTRAL_DB_PASSWORD`, and (where applicable) `CENTRAL_DB_SOCKET` explicitly. Database sessions, cache, and queues use `central` by default in Phase 1.2.
+
+Business lifecycle fields use `DATETIME`, including invitation expiry, for MariaDB 10.4 compatibility; the target production database is MySQL 8+.
