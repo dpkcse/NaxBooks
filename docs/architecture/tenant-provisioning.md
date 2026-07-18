@@ -34,3 +34,30 @@ Provisioning workers require least-privilege ability to create/drop tenant datab
 
 ## Safe database names
 Format: `nax_tenant_{environment}_{tenant_uuid_without_dashes}` or equivalent generated identifier. Never concatenate raw company, tenant, email, or domain input.
+
+## Phase 1.4 implementation
+`TenantProvisioner` is the sole workflow coordinator. It acquires `tenant-provisioning:{id}`, persists stable `ProvisioningStep` checkpoints, and creates a new attempt that inherits prior successful checkpoints. It always clears `TenantContextManager` in `finally`; it does not delete a database on failure.
+
+```mermaid
+sequenceDiagram
+ participant O as Operator
+ participant P as Provisioner
+ participant C as Central DB
+ participant T as Tenant DB
+ O->>P: explicit tenant ID
+ P->>C: acquire lock + attempt
+ P->>T: create validated database
+ P->>T: tenant-only migrations
+ P->>T: currencies, company, branch, access
+ P->>C: checkpoint + trialing
+ P-->>O: sanitized result
+```
+
+```mermaid
+flowchart LR
+ F[failed attempt] --> R[authorized explicit retry]
+ R --> L[lock]
+ L --> K[reuse valid checkpoints]
+ K --> N[first incomplete step]
+ N --> C[complete or retain failure]
+```
