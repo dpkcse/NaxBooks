@@ -1,12 +1,12 @@
 # Phase 1.2 Test Matrix
 
-| Area | Coverage |
-| --- | --- |
-| Central connection | All central models assert `central` connection. |
-| Authentication | Disabled users are rejected; logout invalidates sessions. |
-| Authorization | Platform routes require verified platform administrators. |
-| Lifecycle | Allowed tenant status transitions are explicit. |
-| Mass assignment | Tenant lifecycle status is not fillable. |
-| Audit | Sensitive audit metadata is recursively redacted. |
+| Area | Required coverage | Execution target |
+| --- | --- | --- |
+| Central connection | Connection exists; every central model resolves to `central`; platform routes do not initialize a tenant connection. | Laravel feature tests |
+| Schema | Central migrations, no duplicate users table, valid invitation expiry, FK restrictions, unique constraints, enum defaults. | Disposable MariaDB 10.4 / MySQL 8 integration database |
+| Authentication | Active/disabled login behavior, generic failures, regeneration/logout invalidation, verification, reset, confirmation, throttling. | Laravel feature tests |
+| Lifecycle | Valid/invalid transitions, archived terminal behavior, timestamp updates, status mass-assignment protection. | Unit/feature tests |
+| Audit | Recursive redaction, request ID, old/new values, tenant ID, immutable records. | Unit/feature tests |
+| Isolation/UI | Platform administrator isolation; membership is not platform privilege; auth/dashboard pages render; selector lists active memberships only. | Laravel feature tests |
 
-Full runtime validation requires local Composer dependencies.
+SQLite is useful for fast non-schema tests but is not evidence of MariaDB 10.4 or MySQL 8 migration compatibility.
