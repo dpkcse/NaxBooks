@@ -17,3 +17,6 @@ Phase 1.3 introduces exact verified-domain resolution, a runtime tenant connecti
 
 ## Tenant provisioning (Phase 1.4)
 Tenant provisioning is explicitly scoped and never performs database deletion. See [local tenant provisioning](docs/setup/local-tenant-provisioning.md) for required separate credentials and validation commands. The current source is conditional on local MySQL/MariaDB runtime verification.
+
+## Shared-schema tenancy transition (Steps 1–3)
+The owner accepted the shared-schema MVP ADR. New database-per-tenant feature expansion is frozen while the legacy tenant/provisioning connections, runtime switching, commands, migrations, middleware, and provisioning behavior remain temporarily active. This release adds a parallel scoped `CurrentTenant` and inactive ownership foundation only; it changes no migrations, data, connection definitions, or provisioning behavior. Revert the single transition commit with `git revert <commit>` if required—no database restore, migration rollback, environment change, or data repair is needed. Transition Steps 4–5 (migration-consolidation design, then separately approved additive ownership schema work) are next.

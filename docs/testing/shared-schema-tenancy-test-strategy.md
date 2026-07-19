@@ -8,3 +8,6 @@ For a Tenant A actor and Tenant B fixture, prove A cannot read, update, delete/a
 
 ## Reusable test kit and CI gates
 Provide `createTenantContext()`, `actingAsTenantOwner()`, `actingAsTenantMember()`, `assertTenantIsolation()`, `assertModelBelongsToTenant()`, `tenantFactory()`, `companyFactory()`, and `branchFactory()`. Factories require/derive valid ownership chains and fail loudly on mismatches. Run focused unit/feature tests per change; CI runs full tests, Pint, PHPStan, frontend build and migration status in disposable CI infrastructure. Browser smoke covers login, selection, scoped list/form/error/loading states. Performance tests establish report/list baselines only after representative data exists; do not invent throughput targets.
+
+## Steps 1–3 focused baseline
+This increment supplies explicit `CreatesTenantContext` helpers for context-only tests: `createTenantContext`, `clearTenantContext`, `assertCurrentTenant`, and `assertNoCurrentTenant`. It intentionally does not add membership helpers or shared-schema factories because ownership columns do not exist yet. Tests cover uninitialized/conflicting/idempotent context behavior, ownership comparisons, safe public errors, no connection mutation in the new context, inactive scope status, and retained legacy configuration/commands/migrations. This is not yet proof of complete shared-schema isolation.

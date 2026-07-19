@@ -3,6 +3,11 @@ namespace App\Tenancy;
 use App\Models\Central\Tenant;
 use Illuminate\Database\DatabaseManager;
 use Illuminate\Config\Repository;
+/**
+ * @deprecated Retained temporarily during the shared-schema tenancy transition.
+ * Do not add new dependencies. Removal requires completion of the approved
+ * transition plan and isolation tests.
+ */
 final class TenantContextManager
 {
     public function __construct(private TenantContext $context, private DatabaseManager $database, private Repository $config) {}
