@@ -1,0 +1,31 @@
+# Shared-schema migration inventory
+
+**Status legend:** likely application is unknown until read-only runtime inventory. “Current connection” is source-defined, not runtime verified.
+
+| Order / file | Connection; creates / alters | FK, indexes, unique, null/default/status | Current consumers | Likely status / target action / risk |
+|---|---|---|---|---|
+| `0001_01_01_000000_create_users_table.php` | `central`; creates `users`, `password_reset_tokens`, `sessions`; no alters | `users.email` unique; status=`active`, admin=false indexed; session user nullable/indexed; reset token email PK | `User`, Fortify, central auth tests | Unknown; **KEEP AS-IS**. Low schema risk, high identity criticality. |
+| `0001_01_01_000001_create_cache_table.php` | `central`; `cache`, `cache_locks`; no alters | string key primary keys; no FKs | cache configuration | Unknown; **KEEP AS-IS**. Low. |
+| `0001_01_01_000002_create_jobs_table.php` | `central`; `jobs`, `job_batches`, `failed_jobs`; no alters | jobs queue index; failed UUID unique; nullable reservation/batch fields; `failed_at` current timestamp | queue configuration, tenant-aware job concept | Unknown; **KEEP AS-IS**. Medium operational risk. |
+| `2026_07_18_120000_create_central_tenancy_tables.php` | `central`; `tenants`, `domains`, memberships, invitations, attempts, platform audit; no alters | tenant/user FKs use restrict except nullable audit/inviter references null-on-delete; slug/domain/database name unique; tenant/member and tenant/attempt unique; status/default/index fields | central tenancy models, resolution, lifecycle, registration, audit, provisioning tests | Unknown; **KEEP BUT REPOINT TO PRIMARY CONNECTION LATER** only after verified Case A, otherwise preserve and use additive corrections. High. `database_name` retirement is later, never Step 4/5 without plan. |
+| `2026_07_18_130000_create_tenant_foundation_tables.php` | `tenant`; creates currencies, companies, branches, settings, access, audit; no alters | company/branch/settings FKs; currency/company code globally unique per tenant DB; branch/settings/access composites; defaults false/active; required status fields | `TenantModel` descendants, `TenantFoundationSeeder`, `TenantProvisioner`, Company policy | Unknown; **CONSOLIDATE LATER**; Case B/C requires new corrective shared-schema migration(s), then **ARCHIVE AFTER CUTOVER** and **REMOVE ONLY AFTER REFERENCE-FREE VERIFICATION**. Very high collision/data risk. |
+| `2026_07_18_140000_add_tenant_system_metadata.php` | `tenant`; creates `tenant_system_metadata`; no alters | tenant ID, installation UUID, database identifier all unique; migration date nullable | `TenantSystemMetadata`, `TenantProvisioner` | Unknown; **ARCHIVE AFTER CUTOVER** then **REMOVE ONLY AFTER REFERENCE-FREE VERIFICATION**. High provisioning dependency risk. |
+
+## Applied-history safety
+No source file can prove any migration applied. In Case A only, after explicit owner confirmation that every affected database is disposable, the central tenancy migration may be rebuilt/repointed as part of an approved rebuild. In Cases B/C, edit **none** of these files: preserve ordering and create timestamped additive corrective migrations. Tenant migration files stay until reference-free verification after cutover.
+
+## Foundation table and collision inventory
+
+| Table | Current location / model / dependency | Current ownership and constraints | Target / collision, copy and strategy |
+|---|---|---|---|
+| users, password_reset_tokens, sessions, cache, jobs | `central`; User/framework | global; users email unique, session user nullable | Keep global; no copy. |
+| tenants, domains, memberships, invitations, attempts, platform audit | `central`; central models, resolution/lifecycle/provisioning/audit | tenant references already central; `database_name` legacy unique | Keep canonical central tables; preserve identity. |
+| companies, branches, currencies, settings, access, tenant audit | one table set per legacy tenant DB; tenant models/provisioner/seeder/policy | no tenant IDs; per-DB global code uniques; branch/settings/access link company | Same names collide if primary already contains them. Case A rebuild may use canonical names. Case B/C use additive canonical/parallel naming only after runtime DDL inventory; copy by central tenant ID, validate counts/checksums, retain old tables read-only, remove only reference-free after cutover. |
+| tenant_system_metadata | one per legacy tenant DB; metadata/provisioner | single-tenant marker and database identifier unique | No shared business-table target; retain legacy evidence through provisioning retirement. Never copy as tenant-owned application data without an approved replacement purpose. |
+| migrations | each database potentially has its own repository | records applied files per database | Collision is expected. Never merge/drop histories; inventory each independently. Shared primary migration stream gains new additive entries only. |
+
+## Data mapping and reconciliation design
+For each central `tenants.id` / legacy `database_name`, map source primary keys to a durable mapping/checkpoint record: companies→`tenant_id`; branches→same tenant plus mapped company; currencies→tenant; settings/access→tenant plus mapped company; audit→tenant plus optional mapped company. Preserve source IDs only if collision-free and approved; otherwise use target IDs plus source-key mapping. Preserve `created_at`/`updated_at`, audit JSON and actor fields. Stop/quarantine and report missing tenant marker, orphan company/branch, missing membership, duplicate code, multiple/no defaults, or conflicting target row—never silently choose. Reconcile counts by tenant/table and deterministic ordered-row checksums excluding environment-specific surrogate IDs; retry only unfinished idempotent checkpoints.
+
+## Collision rollback rules
+A temporary parallel table is required only if runtime inventory proves a same-named primary table cannot safely accept an additive change. Otherwise prefer additive columns/constraints. For Case B/C, old tenant DB tables become read-only only after count/checksum/read validation and remain until a documented rollback window and reference-free verification. Rollback restores compatible application traffic, not destructive table removal.

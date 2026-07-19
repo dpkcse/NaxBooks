@@ -26,3 +26,6 @@ No step starts without an approved ADR, non-production rehearsal, change review,
 
 ## Steps 1–3 completion boundary
 Steps 1–3 are complete as a reversible, one-commit foundation: approval, freeze, non-destructive deprecations, parallel scoped context, inactive ownership primitives, tests, and documentation. **Step 4 next:** inventory/consolidation design and non-production rehearsal; do not alter applied history. **Step 5 next after separate approval:** additive `tenant_id` ownership schema, indexes/constraints, controlled backfill/cutover design, and two-tenant isolation evidence. No runtime switching or provisioning removal is authorized before later steps.
+
+## Step 4 completion
+Step 4 is documentation-first and non-destructive: migration/foundation inventory, UNKNOWN environment case classification, collision and data mapping design, and a future rehearsal package are complete. No Step 5 migration, schema, data copy, model adoption, scope activation, or runtime cutover was performed. Step 5 is owner-approval gated by read-only runtime inventory and Case A/B/C confirmation.
