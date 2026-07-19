@@ -1,0 +1,15 @@
+# Simplified development roadmap
+
+No calendar promises: phases are delivered only through their exit gates.
+
+| Phase | Purpose, exact scope and exclusions | Deliverables by role | Migration/docs | Acceptance / exit gate | Complexity |
+|---|---|---|---|---|---|
+| A — Tenancy simplification and core foundation | Shared schema, authentication, registration, memberships/domains/context, company/branch/currency/audit and isolation tests. Excludes fiscal/RBAC/accounting/subscriptions. Depends on ADR and transition plan. | Backend: scopes/onboarding/policies. Frontend: registration/workspace UI. DevOps: one-DB staging/runbook. QA: two-tenant suite. | consolidation plan, ADR/runbooks | no DB switching; all foundation paths scoped; restore and leakage evidence | Very Large |
+| B — Business control foundation | Fiscal years, periods/locks, tenant RBAC, company/branch access, sequences, settings, approval foundation. Excludes posting and commercial operations. Depends A. | Backend actions/policies; frontend control screens; DevOps release checks; QA period/access tests. | ownership/index docs | locked period and access controls proven | Large |
+| C — Accounting core | COA, vouchers/journals, debit-credit validation, immutable posting/reversal, ledger/audit, trial balance/statements/cash-flow foundation. Excludes cash modules/sales/payroll. Depends B. | Senior owns engine; frontend forms/reports; DevOps data/perf baseline; QA invariant suite. | financial migration/audit docs | balanced, immutable, reconciled cross-tenant reports | Very Large |
+| D — Money, parties and daily operations | cash/bank/MFS/petty cash, customer/supplier, AR/AP/expenses/advances/loans/investors. Excludes sales/purchase/inventory/payroll. Depends C. | domain actions/UI/workflows/QA regression | indexed migrations/runbooks | postings reconcile with ledger | Large |
+| E — SME commercial operations | quotations, sales, purchase, inventory, assets, payroll, budgets, approvals, reports. Excludes real estate. Depends C/D as relevant. | bounded modules, accessible tables/forms, worker capacity, E2E tests | module docs | operational transactions post correctly | Very Large |
+| F — Real-estate operations | land/projects/inventory/units, booking/installments/collections/cancellation/refund/handover, cost allocation/profitability. Depends C/D. | project actions/UI, storage/report support, scenario QA | ownership/data lifecycle docs | project profitability reconciles | Very Large |
+| G — SaaS commercialization and hardening | plans/subscriptions/limits/billing/notifications, backup-restore operations, performance/security/observability/production readiness. Excludes dedicated DB runtime. Depends A–F decisions. | lifecycle/billing UI, SLO monitoring, penetration/regression tests | SRS/operations docs | approved DR, security and release gate | Large |
+
+Each phase uses the Definition of Done and has the same four-role review: senior developer (architecture), frontend developer (contract/a11y), DevOps (operability), and test engineer (evidence).
