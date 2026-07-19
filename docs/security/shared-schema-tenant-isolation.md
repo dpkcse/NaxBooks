@@ -20,3 +20,6 @@ Route middleware resolves context before binding. Bind company with current `ten
 
 ## Review and observability
 Review every model, relation, join, bulk statement, cache key, job, export, file endpoint and Livewire public method. Static convention: raw `DB` for tenant data requires a query object and explicit tenant predicate; no UI-provided tenant ownership IDs. Log request ID, actor, action and tenant ID where authorized, but never secrets, tokens, full PII, or cross-tenant existence details. Production alerts classify suspected leakage as a security incident: preserve logs, revoke affected access, scope impact, communicate, remediate and add regression coverage.
+
+## Current transition boundary
+Steps 1–3 add only a non-active ownership foundation. `CurrentTenantContext` is scoped, accepts a persisted trusted tenant only, fails closed when absent, and has no request parsing, domain resolution, membership decision, connection mutation, purge, or reconnect behavior. `TenantScope` is not attached to any production model. Future factories must initialize trusted context; browser `tenant_id` values must remain untrusted, and platform imports require explicit audited privilege.

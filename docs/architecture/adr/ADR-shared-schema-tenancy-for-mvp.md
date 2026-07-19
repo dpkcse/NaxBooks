@@ -1,5 +1,7 @@
 # ADR: Shared-schema tenancy for MVP
-- **Status:** Proposed; requires owner approval before implementation.
+- **Status:** Accepted
+- **Owner approval:** 2026-07-19
+- **Approval record:** The owner approved one Laravel modular monolith, one primary MySQL database, and one shared schema for the MVP. Database-per-tenant feature expansion is frozen; the existing legacy runtime remains temporary. Any runtime migration occurs only through the approved transition plan. A controlled dedicated-database extension for selected enterprise tenants remains deferred and is not implemented now.
 - **Decision:** Use one Laravel modular monolith, one primary MySQL database, and one shared schema. Tenant-owned rows carry `tenant_id`; company and branch rows also carry their applicable ownership IDs. No MVP runtime database switching, database creation, or tenant migration fleet.
 
 ## Decision matrix
