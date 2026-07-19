@@ -23,3 +23,9 @@ No step starts without an approved ADR, non-production rehearsal, change review,
 **B — shared/staging development data:** do not edit applied migrations. Add corrective additive migrations, create shared foundation tables, copy/reconcile only after backup, use temporary parallel tables if names collide, validate counts/checksums/FKs and retain old tenant DBs/read-only rollback window.
 
 **C — production exists:** never edit applied history; require DBA-approved backup/PITR, production inventory, dry-run rehearsal, resumable copy with checksums, dual-read only if explicitly designed, maintenance/cutover plan, tenant-by-tenant validation, and tested restore. Parallel tables are justified only for incompatible schemas; rollback is traffic/code rollback before cutover or approved restore/forward correction after writes.
+
+## Steps 1–3 completion boundary
+Steps 1–3 are complete as a reversible, one-commit foundation: approval, freeze, non-destructive deprecations, parallel scoped context, inactive ownership primitives, tests, and documentation. **Step 4 next:** inventory/consolidation design and non-production rehearsal; do not alter applied history. **Step 5 next after separate approval:** additive `tenant_id` ownership schema, indexes/constraints, controlled backfill/cutover design, and two-tenant isolation evidence. No runtime switching or provisioning removal is authorized before later steps.
+
+## Step 4 completion
+Step 4 is documentation-first and non-destructive: migration/foundation inventory, UNKNOWN environment case classification, collision and data mapping design, and a future rehearsal package are complete. No Step 5 migration, schema, data copy, model adoption, scope activation, or runtime cutover was performed. Step 5 is owner-approval gated by read-only runtime inventory and Case A/B/C confirmation.

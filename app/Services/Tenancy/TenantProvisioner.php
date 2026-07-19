@@ -8,6 +8,11 @@ use App\Tenancy\TenantContextManager;
 use Illuminate\Support\Facades\{Artisan,Cache,Schema};
 use Illuminate\Support\Str;
 use RuntimeException; use Throwable;
+/**
+ * @deprecated Retained temporarily during the shared-schema tenancy transition.
+ * Do not add new dependencies. Removal requires completion of the approved
+ * transition plan and isolation tests.
+ */
 final class TenantProvisioner {
  public function __construct(private CreateTenantDatabase $createDatabase,private TenantContextManager $context,private TenantFoundationSeeder $seed,private TenantStatusTransitionService $transitions,private PlatformAuditService $audit) {}
  public function provision(Tenant $tenant,?int $actorId=null,?string $requestId=null): ProvisioningAttempt { $lock=Cache::lock('tenant-provisioning:'.$tenant->id,120); if(!$lock->get()) throw new RuntimeException('Tenant provisioning is already in progress.'); try{return $this->run($tenant->fresh(),$actorId,$requestId);}finally{$lock->release();$this->context->clear();} }

@@ -1,6 +1,11 @@
 <?php
 namespace App\Tenancy;
 use App\Models\Central\Tenant;
+/**
+ * @deprecated Retained temporarily during the shared-schema tenancy transition.
+ * Do not add new dependencies. Removal requires completion of the approved
+ * transition plan and isolation tests.
+ */
 final class TenantContext
 {
     private ?Tenant $tenant = null;
