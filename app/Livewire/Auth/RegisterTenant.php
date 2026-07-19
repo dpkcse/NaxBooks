@@ -1,0 +1,12 @@
+<?php
+namespace App\Livewire\Auth;
+use App\Actions\Tenancy\RegisterTenantAccount; use App\Enums\BusinessType; use App\Models\Central\Domain; use Illuminate\Support\Str; use Livewire\Component;
+class RegisterTenant extends Component {
+ public int $step=1; public string $name='', $email='', $password='', $password_confirmation='', $legal_name='', $display_name='', $business_type='general_sme', $country='BD', $phone='', $business_email='', $timezone='Asia/Dhaka', $base_currency='BDT', $subdomain='', $availability='invalid'; public bool $terms=false,$privacy=false,$submitting=false;
+ protected function rules():array{return ['name'=>'required|string|max:255','email'=>'required|email|max:255','password'=>'required|confirmed|min:8','legal_name'=>'required|string|max:255','display_name'=>'nullable|string|max:255','business_type'=>'required|in:'.implode(',', array_map(fn (BusinessType $type) => $type->value, BusinessType::cases())),'country'=>'required|string|size:2','phone'=>'nullable|string|max:40','business_email'=>'nullable|email|max:255','timezone'=>'required|in:Asia/Dhaka,UTC,Asia/Kolkata,Asia/Singapore','base_currency'=>'required|in:BDT,USD','subdomain'=>'required|string|max:63','terms'=>'accepted','privacy'=>'accepted'];}
+ public function next():void{$fields=[1=>['name','email','password','password_confirmation'],2=>['legal_name','display_name','business_type','country','phone','business_email','timezone','base_currency'],3=>['subdomain']];$this->validate(collect($this->rules())->only($fields[$this->step])->all());if($this->step===3&&$this->availability!=='available')$this->addError('subdomain','Choose an available workspace name.');else $this->step=min(4,$this->step+1);}
+ public function updatedSubdomain():void{$this->checkSubdomainAvailability();}
+ public function checkSubdomainAvailability():void{$value=Str::lower(trim($this->subdomain));$this->subdomain=$value;if(!preg_match('/^[a-z0-9](?:[a-z0-9-]{1,61}[a-z0-9])$/',$value)||in_array($value,config('tenancy.reserved_subdomains'),true)){$this->availability='invalid';return;}$this->availability=Domain::query()->where('domain',$value.'.'.config('tenancy.tenant_root_domain'))->exists()?'unavailable':'available';}
+ public function submit(RegisterTenantAccount $registration){$this->validate();$this->submitting=true;$tenant=$registration->register($this->all(),auth()->user());return redirect()->route('business.provisioning',['tenant'=>$tenant->id]);}
+ public function render(){return view('livewire.auth.register-tenant',['businessTypes'=>BusinessType::cases()]);}
+}
